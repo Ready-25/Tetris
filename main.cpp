@@ -2,7 +2,9 @@
 #include <ctime>
 #include <vector>
 #include <string>
+#include <SFML/Audio.hpp>
 
+sf::Music music;
 const int WIDTH = 10;
 const int HEIGHT = 20;
 const int BLOCK_SIZE = 30;
@@ -217,6 +219,44 @@ void init() {
     spawnPiece();
 }
 
+void reshape(int w, int h) {
+    float gameAspect = (float)(WIDTH * BLOCK_SIZE) / (HEIGHT * BLOCK_SIZE);
+    float windowAspect = (float)w / h;
+
+    int vpWidth, vpHeight;
+    int vpX = 0, vpY = 0;
+
+    if (windowAspect > gameAspect) {
+        // Window is wider than game: pillarbox
+        vpHeight = h;
+        vpWidth = (int)(h * gameAspect);
+        vpX = (w - vpWidth) / 2;
+    } else {
+        // Window is taller than game: letterbox
+        vpWidth = w;
+        vpHeight = (int)(w / gameAspect);
+        vpY = (h - vpHeight) / 2;
+    }
+
+    glViewport(vpX, vpY, vpWidth, vpHeight);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0, WIDTH * BLOCK_SIZE, HEIGHT * BLOCK_SIZE, 0);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+
+void playMusic() {
+    if (!music.openFromFile("tetris_audio.wav")) {
+        printf("Failed to load music!\n");
+        return;
+    }
+    music.setLoop(true);
+    music.play();
+}
+
+
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
@@ -227,7 +267,9 @@ int main(int argc, char** argv) {
     glutDisplayFunc(display);
     glutSpecialFunc(keyboard);
     glutSpecialUpFunc(keyboardUp);
+    glutReshapeFunc(reshape);  // <-- Add this line
     glutTimerFunc(50, timerFunc, 0);
+    playMusic();
     glutMainLoop();
     return 0;
 }
