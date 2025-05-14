@@ -121,9 +121,47 @@ void clearLines() {
     }
 }
 
+
+void drawFog() {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    // Semi-transparent white/gray fog
+    glColor4f(0.5f, 0.5f, 0.5f, 0.2f);  // Gray fog with some transparency
+    glBegin(GL_QUADS);
+        glVertex2i(0, 0);
+        glVertex2i(WIDTH * BLOCK_SIZE, 0);
+        glVertex2i(WIDTH * BLOCK_SIZE, HEIGHT * BLOCK_SIZE);
+        glVertex2i(0, HEIGHT * BLOCK_SIZE);
+    glEnd();
+
+    glDisable(GL_BLEND); // Disable blending after drawing the fog
+}
+
+void drawGlow() {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Soft red glow at the top (like a blood-red moon glow)
+    glColor4f(0.8f, 0.1f, 0.1f, 0.3f); // Red glow with transparency
+    glBegin(GL_QUADS);
+        glVertex2i(0, 0);
+        glVertex2i(WIDTH * BLOCK_SIZE, 0);
+        glVertex2i(WIDTH * BLOCK_SIZE, HEIGHT * BLOCK_SIZE / 2);
+        glVertex2i(0, HEIGHT * BLOCK_SIZE / 2);
+    glEnd();
+
+    glDisable(GL_BLEND);
+}
+
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // Draw background effects (fog, glow)
+    drawFog();
+    drawGlow();
+
+    // Draw the game field and current pieces
     for (int i = 0; i < HEIGHT; ++i)
         for (int j = 0; j < WIDTH; ++j)
             if (field[i][j])
@@ -133,7 +171,7 @@ void display() {
         if (current[i].y >= 0)
             drawBlock(current[i].x, current[i].y, color);
 
-    glColor3f(1, 1, 1);
+    glColor3f(1, 1, 1);  // White text color
     drawText(10, 30, "Score: " + std::to_string(score));
 
     if (gameOver)
@@ -169,14 +207,14 @@ void keyboardUp(int key, int, int) {
 }
 
 void init() {
+    // Set background color to deep purple, giving a dark and eerie vibe
+    glClearColor(0.2f, 0.1f, 0.3f, 1.0f); // Dark purple background color
+    glEnable(GL_TEXTURE_2D);  // Enable textures if you want to use one
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(0, WIDTH * BLOCK_SIZE, HEIGHT * BLOCK_SIZE, 0);
     srand(time(0));
     spawnPiece();
-
-    // Set funky background color (e.g., purple)
-    glClearColor(0.5f, 0.0f, 0.5f, 1.0f);
 }
 
 int main(int argc, char** argv) {
