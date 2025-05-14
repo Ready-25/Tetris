@@ -88,6 +88,7 @@ void tick() {
         if (!check()) for (int i = 0; i < 4; ++i) current[i] = backup[i];
     }
 
+    // Move down
     for (int i = 0; i < 4; ++i) backup[i] = current[i];
     for (int i = 0; i < 4; ++i) current[i].y += 1;
 
@@ -97,6 +98,10 @@ void tick() {
                 field[backup[i].y][backup[i].x] = color;
         spawnPiece();
     }
+
+    // ✅ Reset dx and rotate after applying
+    dx = 0;
+    rotate = false;
 }
 
 void clearLines() {
@@ -169,6 +174,9 @@ void init() {
     gluOrtho2D(0, WIDTH * BLOCK_SIZE, HEIGHT * BLOCK_SIZE, 0);
     srand(time(0));
     spawnPiece();
+
+    // Set funky background color (e.g., purple)
+    glClearColor(0.5f, 0.0f, 0.5f, 1.0f);
 }
 
 int main(int argc, char** argv) {
