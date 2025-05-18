@@ -66,7 +66,7 @@ void spawnPiece() {
     for (int i = 0; i < 4; ++i) {
         current[i].x = figures[n][i] % 2 + WIDTH / 2 - 1;
         current[i].y = figures[n][i] / 2 - 1;
-        if (field[current[i].y][current[i].x]) {
+        if (current[i].y >= 0 && field[current[i].y][current[i].x]) {
             gameOver = true;
         }
     }
